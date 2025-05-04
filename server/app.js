@@ -462,15 +462,36 @@ app.post('/vozidla/delete', async (req, res) => {
   }
 });
 
-// Použitie API routerov
-app.use('/users', usersRouter);
-app.use('/activity', activityRouter);
-app.use('/aktivita', aktivitaRouter);
+// DIAGNOSTICKÉ ENDPOINTY PRE DEBUG
+app.get('/api-test', (req, res) => {
+  res.json({
+    message: 'API diagnostický test je úspešný',
+    time: new Date().toISOString(),
+    api_routes: [
+      '/users/read', 
+      '/activity', 
+      '/aktivita',
+      '/init-db'
+    ],
+    registered_routes: app._router.stack
+      .filter(r => r.route)
+      .map(r => ({ path: r.route.path, methods: Object.keys(r.route.methods) }))
+  });
+});
 
 // Základná route
 app.get('/', (req, res) => {
   res.send('API vozového parku je aktívne');
 });
+
+// JASNÁ REGISTRÁCIA API ROUTEROV
+console.log('Registrujem API routery...');
+app.use('/users', usersRouter); // Users API routes
+console.log('Registrovaný users router');
+app.use('/activity', activityRouter); // Activity API routes
+console.log('Registrovaný activity router');
+app.use('/aktivita', aktivitaRouter); // Aktivita API routes
+console.log('Registrovaný aktivita router');
 
 // Endpoint pre manuálnu inicializáciu databázy
 app.get('/init-db', async (req, res) => {
