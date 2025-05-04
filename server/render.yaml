@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: vozovy-park-api
+    env: node
+    buildCommand: npm install
+    startCommand: node app.js
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: PORT
+        value: 8000
