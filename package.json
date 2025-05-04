@@ -1,4 +1,11 @@
 {
+  "name": "vozovy-park",
+  "version": "1.0.0",
+  "description": "Aplikácia pre správu vozového parku",
+  "scripts": {
+    "start": "cd server && node app.js",
+    "install": "cd server && npm install"
+  },
   "devDependencies": {
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.3",

@@ -472,9 +472,41 @@ app.get('/', (req, res) => {
   res.send('API vozového parku je aktívne');
 });
 
+// Endpoint pre manuálnu inicializáciu databázy
+app.get('/init-db', async (req, res) => {
+  try {
+    console.log('Inicializácia databázy...');
+    await vehicleDao.initializeDatabase();
+    console.log('Inicializácia tabuliek vozí...');
+    await vehicleDao.createUsersTable();
+    console.log('Inicializácia používateľských tabuliek...');
+    
+    // Vytvorenie základných používateľov
+    try {
+      await pool.query(`
+        INSERT INTO users (username, password, email, role, status)
+        VALUES ('admin', '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'admin@vozovypark.sk', 'admin', 'active')
+        ON CONFLICT (username) DO NOTHING;
+      `);
+      console.log('Admin používateľ bol úspešne vytvorený alebo už existuje');
+    } catch (userError) {
+      console.error('Chyba pri vytváraní admin používateľa:', userError);
+    }
+    
+    return res.json({ success: true, message: 'Databáza bola úspešne inicializovaná' });
+  } catch (error) {
+    console.error('Chyba pri inicializácii databázy:', error);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 async function startServer() {
   try {
+    // Inicializácia tabuliek vozidiel
     await vehicleDao.initializeDatabase();
+    // Inicializácia používateľských tabuliek
+    await vehicleDao.createUsersTable();
+    
     app.listen(port, () => {
       console.log(`Server beží na porte ${port}`);
       console.log(`http://localhost:${port}`);
