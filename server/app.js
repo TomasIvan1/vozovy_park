@@ -17,7 +17,17 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 8000;
 
-app.use(cors());
+// Rozšírené CORS nastavenia pre lepšiu cross-domain komunikáciu
+app.use(cors({
+  origin: '*', // Povoľuje všetky origin domény (v produkčnom prostredí by malo byť obmedzenejšie)
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
+
+// Pridané OPTIONS pre preflight požiadavky
+app.options('*', cors());
+
+// Body parser nastavenia pre JSON a formuláre
 app.use(bodyParser.json({ limit: '10mb', strict: false }));
 app.use(bodyParser.urlencoded({ extended: true }));
 
